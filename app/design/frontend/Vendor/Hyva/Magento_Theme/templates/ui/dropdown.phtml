@@ -1,0 +1,162 @@
+<?php
+declare(strict_types=1);
+
+use Hyva\Theme\ViewModel\SvgIcons;
+
+/** @var SvgIcons $hyvaicons */
+$hyvaicons = $viewModels->require(SvgIcons::class);
+
+$uniqueId = '_' . uniqid();
+
+/**
+ * $label - label for input, if no provide, will not render
+ * $name - name for select input, incase if not provided, will fallback to id.
+ * $id - id for select input
+ * $defaultValue - default option selected, if no, fallback to placeholder
+ * $placeholder - Used as placeholder for select input, like 'Select option'.
+ * $onChange - Custom function will be executed on select input change, used in cases when need to select country.
+ */
+
+ /**
+  * Options structure:
+  * [
+  *  [
+  *   'value' => Input value
+  *   'label' => Input label
+  *   'disabled' => true|false
+  *   'customAttributes' => [
+  *    'attribute name' => value
+  *   ]
+  *  ]
+  * ]
+  */
+
+$label = $block->getLabel();
+$id = $block->getId();
+$name = $block->getName() ?? $id;
+$options = $block->getOptions();
+$defaultValue = $block->getDefault() ?? $options[0]['value'];
+$placeholder = $block->getPlaceholder();
+$onChange = $block->getOnChange();
+
+?>
+
+<script>
+    function initDropdown<?= /** @noEscape */  $uniqueId ?>() {
+        return {
+            isOpen: false,
+            selectedOptionValue: '<?= $placeholder ? '' : $defaultValue ?? $options[0]['value'] ?>',
+            activeIndex: -1,
+            handleOptionSelect(value) {
+                this.selectedOptionValue = value;
+                this.$refs.select.value = value;
+                this.$refs.select.dispatchEvent(new Event('change'));
+                this.isOpen = false;
+            },
+            select() {
+                const selectedOption = this.$refs.dropdown.getElementsByClassName('form-select-option-selected');
+                this.$refs.dropdown.scrollTo(0, selectedOption[0].offsetTop);
+            },
+            init() {
+                this.$watch('isOpen', value => {
+                    if (!value) {
+                        this.activeIndex = -1;
+                    } else {
+                        this.$nextTick(() => {
+                            this.$refs.select.focus();
+                            const selectedOption = this.$refs.dropdown.getElementsByClassName('form-select-option-selected');
+                            this.$refs.dropdown.scrollTo(0, selectedOption[0].offsetTop);
+                        });
+                    }
+                });
+            }
+        }
+    }
+</script>
+
+<?php if ($label): ?>
+    <label class="label" for="<?= $id ?>" @click="$event.preventDefault();">
+        <span>
+            <?= $label ?>
+        </span>
+    </label>
+<?php endif; ?>
+<div class="control">
+    <div x-data="initDropdown<?= /** @noEscape */  $uniqueId ?>()" class="form-select-wrapper">
+        <select
+            class="form-select w-full"
+            @mousedown="isDesktop ? $event.preventDefault() : null"
+            @click="isDesktop ? (isOpen = !isOpen) : null"
+            @mouseup="isDesktop ? $event.preventDefault() : null"
+            x-model="selectedOptionValue"
+            @keydown="select()"
+            @keydown.enter.prevent="isOpen = false"
+            x-ref="select"
+            id="<?= $id ?>"
+            name="<?= $name ?>"
+            <?php if($onChange): ?>
+                @change.debounce="<?= $onChange ?>"
+            <?php endif; ?>
+        >
+            <?php if ($placeholder): ?>
+                <option hidden>
+                    <?= $placeholder ?>
+                </option>
+            <?php endif; ?>
+            <?php foreach($options as $option): ?>
+                <?php
+                    $optionValue = $option['value'];
+                    $isDisabled = empty($option['disabled']) ? false : $option['disabled'];
+                    $optionLabel = $option['label'];
+                ?>
+                <option
+                    <?php if($isDisabled): ?>
+                        disabled
+                    <?php endif; ?>
+                    value="<?= $optionValue ?>"
+                    <?php if (isset($option['customAttributes'])): ?>
+                        <?php foreach($option['customAttributes'] as $key => $value): ?>
+                            <?= $key ?>="<?= $value ?>"
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                >
+                    <?= $optionLabel ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+        <div class="chevron" :class="{ 'chevron-opened': isOpen }">
+            <!-- Change to your chevron or custom icon -->
+            <?= $hyvaicons->renderHtml('chevron', '', 20, 20) ?>
+        </div>
+        <ul
+            x-cloak
+            x-show="isOpen"
+            @click.away="isOpen = false"
+            class="form-select-options-list"
+            tabindex="0"
+            x-ref="dropdown"
+        >
+                <?php foreach($options as $key => $option): ?>
+                    <?php
+                        $optionValue = $option['value'];
+                        $isDisabled = empty($option['disabled']) ? false : $option['disabled'];
+                        $optionLabel = $option['label'];
+                    ?>
+                    <li
+                    @click="handleOptionSelect('<?= $optionValue ?>');"
+                    :class="{ 'form-select-option-selected': selectedOptionValue === '<?= $optionValue ?>' }"
+                    class="form-select-option <?= !$isDisabled ?: 'form-select-option-disabled' ?>"
+                    value="<?= $optionValue ?>"
+                    id="<?= $optionValue ?>"
+                    :tabindex="<?= $key ?>"
+                    :key="<?= $key ?>"
+                    <?php if($isDisabled): ?>
+                        disabled
+                    <?php endif; ?>
+                    >
+                        <?= $optionLabel ?>
+                    </li>
+                <?php endforeach; ?>
+        </ul>
+    </div>
+</div>
