@@ -16,6 +16,7 @@
     <module name="Scandiweb_StyleGuide">
         <sequence>
             <module name="Magento_Theme"/>
+            <module name="Hyva_Theme"/>
         </sequence>
     </module>
 </config>
