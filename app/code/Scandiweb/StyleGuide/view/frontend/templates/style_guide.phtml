@@ -17,11 +17,11 @@ $viewModel = $block->getData('view_model');
 $sectionBlocks = $viewModel->getSectionBlocks();
 ?>
 <div class="style-guide-container">
-    <dl class="grid" style="grid-template-columns: 200px auto; grid-row-gap: 100px;">
+    <dl class="grid grid-cols-1 gap-10 lg:grid-cols-[200px,_1fr] lg:gap-[100px]">
         <?php foreach ($sectionBlocks as $block): ?>
         <?php $html = trim($block->toHtml()); ?>
         <?php if ($html): ?>
-        <dt class="my-3 text-xl" style="flex: 1;"><?= $escaper->escapeHtml($block->getTitle()); ?></dt>
+        <dt class="my-3 font-bold text-xl text-center lg:text-left" style="flex: 1;"><?= $escaper->escapeHtml($block->getTitle()); ?></dt>
         <dd style="flex: 2;">
             <?= $block->toHtml() ?>
         </dd>
