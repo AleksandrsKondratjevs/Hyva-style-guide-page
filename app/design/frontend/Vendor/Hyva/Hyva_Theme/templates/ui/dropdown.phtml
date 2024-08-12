@@ -6,7 +6,7 @@ use Hyva\Theme\ViewModel\SvgIcons;
 /** @var SvgIcons $hyvaicons */
 $hyvaicons = $viewModels->require(SvgIcons::class);
 
-$uniqueId = '_' . uniqid();
+$uniqueId = uniqid('_');
 
 /**
  * $label - label for input, if no provide, will not render
@@ -34,6 +34,7 @@ $uniqueId = '_' . uniqid();
 $label = $block->getLabel();
 $id = $block->getId() ?? $uniqueId;
 $name = $block->getName() ?? $id;
+$ref = $block->getRef() ?? 'select';
 $options = $block->getOptions();
 $defaultValue = $block->getDefault() ?? $options[0]['value'];
 $placeholder = $block->getPlaceholder();
@@ -48,10 +49,10 @@ $onChange = $block->getOnChange();
             selectedOptionValue: '<?= $placeholder ? '' : $defaultValue ?? $options[0]['value'] ?>',
             activeIndex: -1,
             handleOptionSelect(value) {
-                this.selectedOptionValue = value;
-                this.$refs.select.value = value;
-                this.$refs.select.dispatchEvent(new Event('change'));
                 this.isOpen = false;
+                this.selectedOptionValue = value;
+                this.$refs['<?= $ref ?>'].value = value;
+                this.$refs['<?= $ref ?>'].dispatchEvent(new Event('change'));
             },
             select() {
                 const selectedOption = this.$refs.dropdown.getElementsByClassName('form-select-option-selected');
@@ -68,7 +69,7 @@ $onChange = $block->getOnChange();
                         this.activeIndex = -1;
                     } else {
                         this.$nextTick(() => {
-                            this.$refs.select.focus();
+                            this.$refs['<?= $ref ?>'].focus();
                             this.select();
                         });
                     }
@@ -95,7 +96,7 @@ $onChange = $block->getOnChange();
             x-model="selectedOptionValue"
             @keydown="select()"
             @keydown.enter.prevent="isOpen = false"
-            x-ref="select"
+            x-ref="<?= $ref ?>"
             id="<?= $id ?>"
             name="<?= $name ?>"
             <?php if($onChange): ?>
@@ -140,27 +141,27 @@ $onChange = $block->getOnChange();
             tabindex="0"
             x-ref="dropdown"
         >
-                <?php foreach($options as $key => $option): ?>
-                    <?php
-                        $optionValue = $option['value'];
-                        $isDisabled = empty($option['disabled']) ? false : $option['disabled'];
-                        $optionLabel = $option['label'];
-                    ?>
-                    <li
-                    @click="handleOptionSelect('<?= $optionValue ?>');"
-                    :class="{ 'form-select-option-selected': selectedOptionValue === '<?= $optionValue ?>' }"
-                    class="form-select-option <?= !$isDisabled ?: 'form-select-option-disabled' ?>"
-                    value="<?= $optionValue ?>"
-                    id="<?= $optionValue ?>"
-                    :tabindex="<?= $key ?>"
-                    :key="<?= $key ?>"
-                    <?php if($isDisabled): ?>
-                        disabled
-                    <?php endif; ?>
-                    >
-                        <?= $optionLabel ?>
-                    </li>
-                <?php endforeach; ?>
+            <?php foreach($options as $key => $option): ?>
+                <?php
+                    $optionValue = $option['value'];
+                    $isDisabled = empty($option['disabled']) ? false : $option['disabled'];
+                    $optionLabel = $option['label'];
+                ?>
+                <li
+                @click="handleOptionSelect('<?= $optionValue ?>');"
+                :class="{ 'form-select-option-selected': selectedOptionValue === '<?= $optionValue ?>' }"
+                class="form-select-option <?= !$isDisabled ?: 'form-select-option-disabled' ?>"
+                value="<?= $optionValue ?>"
+                id="<?= $optionValue ?>"
+                :tabindex="<?= $key ?>"
+                :key="<?= $key ?>"
+                <?php if($isDisabled): ?>
+                    disabled
+                <?php endif; ?>
+                >
+                    <?= $optionLabel ?>
+                </li>
+            <?php endforeach; ?>
         </ul>
     </div>
 </div>
