@@ -13,9 +13,21 @@ declare(strict_types=1);
 /** @var \Scandiweb\StyleGuide\Block\Section $block */
 /** @var \Magento\Framework\Escaper $escaper */
 ?>
-<div x-data="{ isLoading: true }" class="relative max-w-80">
-<?php echo $this->getLayout()
+<div x-data="{ isLoading: true }" class="relative h-28">
+<?= $this->getLayout()
           ->createBlock('Magento\Framework\View\Element\Template')
           ->setTemplate('Hyva_Theme::ui/loading-block.phtml')
+          ->toHtml(); ?>
+</div>
+<div class="mt-4" x-data="{ isLoading: false }">
+    <button
+        class="btn btn-primary"
+        @click="isLoading = true; setTimeout(() => isLoading = false, 1000)"
+    >
+        <?= __('Show full page loader (1 second)') ?>
+    </button>
+<?= $this->getLayout()
+          ->createBlock('Magento\Framework\View\Element\Template')
+          ->setTemplate('Hyva_Theme::ui/loading.phtml')
           ->toHtml(); ?>
 </div>

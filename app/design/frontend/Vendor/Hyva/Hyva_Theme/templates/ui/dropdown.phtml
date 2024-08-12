@@ -32,7 +32,7 @@ $uniqueId = '_' . uniqid();
   */
 
 $label = $block->getLabel();
-$id = $block->getId();
+$id = $block->getId() ?? $uniqueId;
 $name = $block->getName() ?? $id;
 $options = $block->getOptions();
 $defaultValue = $block->getDefault() ?? $options[0]['value'];
@@ -55,6 +55,11 @@ $onChange = $block->getOnChange();
             },
             select() {
                 const selectedOption = this.$refs.dropdown.getElementsByClassName('form-select-option-selected');
+
+                if (!Array.from(selectedOption).length) {
+                    return;
+                }
+
                 this.$refs.dropdown.scrollTo(0, selectedOption[0].offsetTop);
             },
             init() {
@@ -64,8 +69,7 @@ $onChange = $block->getOnChange();
                     } else {
                         this.$nextTick(() => {
                             this.$refs.select.focus();
-                            const selectedOption = this.$refs.dropdown.getElementsByClassName('form-select-option-selected');
-                            this.$refs.dropdown.scrollTo(0, selectedOption[0].offsetTop);
+                            this.select();
                         });
                     }
                 });
@@ -85,9 +89,9 @@ $onChange = $block->getOnChange();
     <div x-data="initDropdown<?= /** @noEscape */  $uniqueId ?>()" class="form-select-wrapper">
         <select
             class="form-select w-full"
-            @mousedown="isDesktop ? $event.preventDefault() : null"
-            @click="isDesktop ? (isOpen = !isOpen) : null"
-            @mouseup="isDesktop ? $event.preventDefault() : null"
+            @mousedown="!$store.device.isMobile ? $event.preventDefault() : null"
+            @click="!$store.device.isMobile ? (isOpen = !isOpen) : null"
+            @mouseup="!$store.device.isMobile ? $event.preventDefault() : null"
             x-model="selectedOptionValue"
             @keydown="select()"
             @keydown.enter.prevent="isOpen = false"

@@ -29,10 +29,10 @@ $heroiconssolid = $viewModels->require(HeroiconsSolid::class);
                 </div>
             </div>
             <div class="field required">
-                <label class="label" for="input"><span><?= __('Input required') ?></span></label>
+                <label class="label" for="input-0"><span><?= __('Input required') ?></span></label>
                 <div class="control">
                     <input name="login[username]" class="form-input" required
-                        id="input"
+                        id="input-0"
                         style="min-width: 320px;" />
                 </div>
             </div>
@@ -136,43 +136,60 @@ $heroiconssolid = $viewModels->require(HeroiconsSolid::class);
             </div>
             <hr class="my-4"/>
             <div class="field">
-                <label class="label" for="select">
-                    <span><?= __('Select') ?></span>
-                </label>
-                <div class="control max-w-80">
-                    <select
-                        class="form-select w-full"
-                    >
-                        <option hidden></option>
-                        <option value="option-1"><?= __('Option 1') ?></option>
-                        <option value="option-2"><?= __('Option 2') ?></option>
-                        <option value="option-3"><?= __('Option 3') ?></option>
-                        <option value="option-4"><?= __('Option 4') ?></option>
-                        <option value="option-5"><?= __('Option 5') ?></option>
-                        <option value="option-6"><?= __('Option 6') ?></option>
-                        <option value="option-7"><?= __('Option 7') ?></option>
-                    </select>
-                </div>
+                <?=
+                    $this->getLayout()
+                    ->createBlock('Magento\Framework\View\Element\Template')
+                    ->setTemplate('Hyva_Theme::ui/dropdown.phtml')
+                    ->setData('label', 'Country')
+                    ->setData('id', 'select-id')
+                    ->setData('name', 'select-name')
+                    ->setData('options', [
+                        [
+                            'value' => 'option-1',
+                            'label' => 'Option 1',
+                        ],
+                        [
+                            'value' => 'option-2',
+                            'label' => 'Option 2 disabled',
+                            'disabled' => true
+                        ],
+                        [
+                            'value' => 'option-3',
+                            'label' => 'Option 3',
+                        ]
+                    ])
+                    ->setData('placeholder', 'Select country...')
+                    ->setData('is_required', true)
+                    ->toHtml();
+                ?>
             </div>
             <div class="field">
-                <label class="label" for="select">
-                    <span><?= __('Select disabled') ?></span>
-                </label>
-                <div class="control max-w-80">
-                    <select
-                        class="form-select w-full"
-                        disabled
-                    >
-                        <option hidden></option>
-                        <option value="option-1"><?= __('Option 1') ?></option>
-                        <option value="option-2"><?= __('Option 2') ?></option>
-                        <option value="option-3"><?= __('Option 3') ?></option>
-                        <option value="option-4"><?= __('Option 4') ?></option>
-                        <option value="option-5"><?= __('Option 5') ?></option>
-                        <option value="option-6"><?= __('Option 6') ?></option>
-                        <option value="option-7"><?= __('Option 7') ?></option>
-                    </select>
-                </div>
+                <?=
+                    $this->getLayout()
+                    ->createBlock('Magento\Framework\View\Element\Template')
+                    ->setTemplate('Hyva_Theme::ui/dropdown.phtml')
+                    ->setData('label', 'Country')
+                    ->setData('id', 'select-id-2')
+                    ->setData('name', 'select-name')
+                    ->setData('options', [
+                        [
+                            'value' => 'option-1',
+                            'label' => 'Option 1',
+                        ],
+                        [
+                            'value' => 'option-2',
+                            'label' => 'Option 2 disabled',
+                            'disabled' => true
+                        ],
+                        [
+                            'value' => 'option-3',
+                            'label' => 'Option 3',
+                        ]
+                    ])
+                    ->setData('placeholder', 'Select country...')
+                    ->setData('is_required', true)
+                    ->toHtml();
+                ?>
             </div>
             <hr class="my-4"/>
             <div class="field choice">
